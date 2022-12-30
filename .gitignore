@@ -131,4 +131,7 @@ dmypy.json
 
 # data
 *.mp4
-train/
+input/
+
+# model
+*.pth
