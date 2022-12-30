@@ -23,7 +23,7 @@ def main():
     save_dir = image_dir
 
     # make coco json file per video
-    for json_p in tqdm(json_dir.glob('scene_00*.json')):
+    for json_p in tqdm(json_dir.glob('*.json')):
         anno = load_annotation(json_p)
         coco_dataset = {
             'images': [],
@@ -33,10 +33,10 @@ def main():
         for image_id, image_p in enumerate(image_dir.glob(f'{json_p.stem}/images/*.png')):
             # add image
             image_info = {
+                'id': image_id,
                 'file_name': image_p.name,
                 'height': HEIGHT,
                 'width': WIDTH,
-                'id': image_id,
             }
             coco_dataset['images'].append(image_info)
             # add annotation
@@ -47,12 +47,12 @@ def main():
                     x, y, w, h = x1, y1, x2 - x1, y2 - y1
                     annotation_info = {
                         # 'segmentation': None,
-                        'area': w * h,
-                        'iscrowd': 0,
+                        'id': instance_id,
                         'image_id': image_id,
                         'bbox': [x, y, w, h],
                         'category_id': CATEGORY2ID[cat],
-                        'id': instance_id,
+                        'area': w * h,
+                        'iscrowd': 0,
                     }
                     coco_dataset['annotations'].append(annotation_info)
                     instance_id += 1
