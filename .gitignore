@@ -128,10 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-
-# data
-*.mp4
-input/
-
 # model
 *.pth
