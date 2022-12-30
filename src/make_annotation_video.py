@@ -46,36 +46,36 @@ def main():
     annot_paths = sorted(list(INPUT_DIR.glob("*.json")))
     video_paths = sorted(list(INPUT_DIR.glob("*.mp4")))
 
-    i_scene = 0
-    i_frame = 0
-    video_path = video_paths[i_scene]
-    annot_path = annot_paths[i_scene]
-
-    frames, _, _, _ = load_frames(video_path)
-    annots = load_annots(annot_path)
-
-    frame = frames[i_frame]
-    annot = annots[i_frame]
-
-    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
-    ax.imshow(frame)
-    ax.set_title("original")
-    plt.show()
-
-    scene = video_path.stem
-    frame = draw_annotation(scene, i_frame, frame, annot)
-    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
-    ax.set_title("annotated")
-    ax.imshow(frame)
-    plt.show()
-
     n_scenes = len(video_paths)
     for i_scene in range(n_scenes):
         video_path = video_paths[i_scene]
         annot_path = annot_paths[i_scene]
         assert video_path.stem == annot_path.stem
         create_annotated_video(video_path, annot_path, output_dir=OUTPUT_DIR)
-        break
+        # break
+
+    # i_scene = 0
+    # i_frame = 0
+    # video_path = video_paths[i_scene]
+    # annot_path = annot_paths[i_scene]
+
+    # frames, _, _, _ = load_frames(video_path)
+    # annots = load_annots(annot_path)
+
+    # frame = frames[i_frame]
+    # annot = annots[i_frame]
+
+    # fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    # ax.imshow(frame)
+    # ax.set_title("original")
+    # plt.show()
+
+    # scene = video_path.stem
+    # frame = draw_annotation(scene, i_frame, frame, annot)
+    # fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    # ax.set_title("annotated")
+    # ax.imshow(frame)
+    # plt.show()
 
 
 def need_repair(cat):
