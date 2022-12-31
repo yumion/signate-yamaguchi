@@ -14,7 +14,7 @@ def main():
 
     data = get_dataframe(src_dir)
     train, test = data_split(data, n_splits=n_splits)
-    # save_data(test, src_dir, dst_dir, train_test='test', symlink=True)  # foldフォルダ直下に画像を全て保存
+    save_data(test, src_dir, dst_dir, train_test='test', symlink=True)  # foldフォルダ直下に画像を全て保存
     save_data(train, src_dir, dst_dir, train_test='train', symlink=True)  # foldフォルダ直下に画像を全て保存
     # save_group(test, src_dir, dst_dir, symlink=True)  # 動画単位でフォルダ分けして保存
 
@@ -63,8 +63,7 @@ def save_group(folds, src_dir, dst_dir, symlink=False):
 
 def save_data(folds, src_dir, dst_dir, train_test='test', symlink=False):
     for i, fold in folds.items():
-        dst_json = {'images': [], 'annotations': []}
-        for video, image in tqdm(zip(fold['group'], fold['data']), desc=f'cv{i + 1}/{train_test}'):
+        for video, image in tqdm(zip(fold['group'], fold['data']), desc=f'image:cv{i + 1}/{train_test}'):
             # images
             src_image_p = src_dir / video / 'images' / image
             dst_image_p = dst_dir / f'cv{i + 1}/{train_test}' / 'images' / image
@@ -73,7 +72,10 @@ def save_data(folds, src_dir, dst_dir, train_test='test', symlink=False):
                 dst_image_p.resolve().symlink_to(src_image_p.resolve())
             else:
                 shutil.copytree(src_image_p, dst_image_p)
-            # annotation json
+
+        # annotation json
+        dst_json = {'images': [], 'annotations': []}
+        for video in tqdm(list(set(fold['group'])), desc=f'annotation:cv{i + 1}/{train_test}'):
             src_json = load_annotation(src_dir / video / 'annotations.json')
             dst_json['images'].extend(src_json['images'])
             dst_json['annotations'].extend(src_json['annotations'])
