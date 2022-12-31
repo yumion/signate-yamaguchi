@@ -22,6 +22,10 @@ def main():
     image_dir = Path('../input/train_image')
     save_dir = image_dir
 
+    # serial instance id throughout all video
+    # because of merging coco json for cross validation
+    image_id = 0
+    instance_id = 0
     # make coco json file per video
     for json_p in tqdm(json_dir.glob('*.json')):
         anno = load_annotation(json_p)
@@ -29,8 +33,10 @@ def main():
             'images': [],
             'annotations': [],
         }
-        instance_id = 0  # serial instance id throughout video
-        for image_id, image_p in enumerate(image_dir.glob(f'{json_p.stem}/images/*.png')):
+        # # reset at new video
+        # image_id = 0
+        # instance_id = 0
+        for i, image_p in enumerate(image_dir.glob(f'{json_p.stem}/images/*.png')):
             # add image
             image_info = {
                 'id': image_id,
@@ -40,7 +46,7 @@ def main():
             }
             coco_dataset['images'].append(image_info)
             # add annotation
-            labels = anno[image_id]['labels']
+            labels = anno[i]['labels']
             for cat, bboxes in labels.items():
                 for bbox in bboxes:
                     (x1, y1), (x2, y2) = bbox
@@ -56,6 +62,7 @@ def main():
                     }
                     coco_dataset['annotations'].append(annotation_info)
                     instance_id += 1
+            image_id += 1
 
         coco_dataset['categories'] = CATEGORIES
         save_path = save_dir / json_p.stem / 'annotations.json'

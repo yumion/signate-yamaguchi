@@ -4,6 +4,8 @@ from tqdm import tqdm
 import numpy as np
 from sklearn.model_selection import GroupKFold
 
+from convert_coco import load_annotation, save_annotation
+
 
 def main():
     src_dir = Path('../input/train_image')
@@ -11,9 +13,10 @@ def main():
     n_splits = 5
 
     data = get_dataframe(src_dir)
-    folds = data_split(data, n_splits=n_splits)
-    save_group(folds, src_dir, dst_dir, symlink=True)  # 動画単位でフォルダ分けして保存
-    # save_data(folds, src_dir, dst_dir, symlink=True)  # foldフォルダ直下に画像を全て保存
+    train, test = data_split(data, n_splits=n_splits)
+    # save_data(test, src_dir, dst_dir, train_test='test', symlink=True)  # foldフォルダ直下に画像を全て保存
+    save_data(train, src_dir, dst_dir, train_test='train', symlink=True)  # foldフォルダ直下に画像を全て保存
+    # save_group(test, src_dir, dst_dir, symlink=True)  # 動画単位でフォルダ分けして保存
 
 
 def get_dataframe(src_dir):
@@ -29,16 +32,20 @@ def data_split(data, n_splits):
     group_kf = GroupKFold(n_splits)
     x = np.array(data['image'])
     groups = np.array(data['video'])
-    out = {}
+    train, test = {}, {}
     for i, (train_idxes, test_idxes) in enumerate(group_kf.split(data['image'], groups=groups)):
-        out[i] = {
+        train[i] = {
+            'group': groups[train_idxes].tolist(),
+            'data': x[train_idxes].tolist()
+        }
+        test[i] = {
             'group': groups[test_idxes].tolist(),
             'data': x[test_idxes].tolist(),
         }
-        print(f"Fold {i}:")
+        print(f"Fold {i + 1}:")
         print(f"  Train: group={np.unique(groups[train_idxes])}")
         print(f"  Test: group={np.unique(groups[test_idxes])}")
-    return out
+    return train, test
 
 
 def save_group(folds, src_dir, dst_dir, symlink=False):
@@ -54,16 +61,24 @@ def save_group(folds, src_dir, dst_dir, symlink=False):
                 shutil.copytree(src_p, dst_p)
 
 
-def save_data(folds, src_dir, dst_dir, symlink=False):
+def save_data(folds, src_dir, dst_dir, train_test='test', symlink=False):
     for i, fold in folds.items():
-        for video, image in tqdm(zip(fold['group'], fold['data']), desc=f'cv{i + 1}'):
-            src_p = src_dir / video / 'images' / image
-            dst_p = dst_dir / f'cv{i + 1}' / 'images' / image
-            dst_p.parent.mkdir(parents=True, exist_ok=True)
+        dst_json = {'images': [], 'annotations': []}
+        for video, image in tqdm(zip(fold['group'], fold['data']), desc=f'cv{i + 1}/{train_test}'):
+            # images
+            src_image_p = src_dir / video / 'images' / image
+            dst_image_p = dst_dir / f'cv{i + 1}/{train_test}' / 'images' / image
+            dst_image_p.parent.mkdir(parents=True, exist_ok=True)
             if symlink:
-                dst_p.resolve().symlink_to(src_p.resolve())
+                dst_image_p.resolve().symlink_to(src_image_p.resolve())
             else:
-                shutil.copytree(src_p, dst_p)
+                shutil.copytree(src_image_p, dst_image_p)
+            # annotation json
+            src_json = load_annotation(src_dir / video / 'annotations.json')
+            dst_json['images'].extend(src_json['images'])
+            dst_json['annotations'].extend(src_json['annotations'])
+            dst_json['categories'] = src_json['categories']
+        save_annotation(dst_json, dst_dir / f'cv{i + 1}/{train_test}' / 'annotations.json')
 
 
 def symlink_dir(src_dir, dst_dir):
