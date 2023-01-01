@@ -5,22 +5,28 @@ from tqdm import tqdm
 
 HEIGHT = 1080
 WIDTH = 1920
+# original classes
+# CATEGORIES = [
+#     {'id': 0, 'name': '要補修-1.区画線'},
+#     {'id': 1, 'name': '要補修-2.道路標識'},
+#     {'id': 2, 'name': '要補修-3.照明'},
+#     {'id': 3, 'name': '補修不要-1.区画線'},
+#     {'id': 4, 'name': '補修不要-2.道路標識'},
+#     {'id': 5, 'name': '補修不要-3.照明'},
+# ]
+# class merge
 CATEGORIES = [
-    {'id': 0, 'name': '要補修-1.区画線'},
-    {'id': 1, 'name': '要補修-2.道路標識'},
-    {'id': 2, 'name': '要補修-3.照明'},
-    {'id': 3, 'name': '補修不要-1.区画線'},
-    {'id': 4, 'name': '補修不要-2.道路標識'},
-    {'id': 5, 'name': '補修不要-3.照明'},
+    {'id': 0, 'name': '区画線'},
+    {'id': 1, 'name': '道路標識'},
+    {'id': 2, 'name': '照明'},
 ]
-CATEGORY2ID = {category['name']: category['id'] for category in CATEGORIES}
 
 
 def main():
-
     json_dir = Path('../input/train')
     image_dir = Path('../input/train_image')
     save_dir = image_dir
+    annotation_filename = 'annotations_3classes'
 
     # serial instance id throughout all video
     # because of merging coco json for cross validation
@@ -56,7 +62,7 @@ def main():
                         'id': instance_id,
                         'image_id': image_id,
                         'bbox': [x, y, w, h],
-                        'category_id': CATEGORY2ID[cat],
+                        'category_id': category2id[cat],
                         'area': w * h,
                         'iscrowd': 0,
                     }
@@ -65,8 +71,15 @@ def main():
             image_id += 1
 
         coco_dataset['categories'] = CATEGORIES
-        save_path = save_dir / json_p.stem / 'annotations.json'
+        save_path = save_dir / json_p.stem / f'{annotation_filename}.json'
         save_annotation(coco_dataset, save_path)
+
+
+# parent classにも対応
+def category2id(category_name):
+    for category in CATEGORIES:
+        if category['name'] in category_name:
+            return category['id']
 
 
 def load_annotation(anno_path):
