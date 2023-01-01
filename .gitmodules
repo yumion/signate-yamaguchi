@@ -1,0 +1,3 @@
+[submodule "src/mmdetection"]
+	path = src/mmdetection
+	url = https://github.com/yumion/mmdetection.git
