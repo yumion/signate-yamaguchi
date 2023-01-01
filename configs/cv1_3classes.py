@@ -1,14 +1,11 @@
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = 'input/train_5cv/cv1/'
+data_root = 'input/train_5cv_3classes/cv1/'
 annotation_filename = 'annotations_3classes.json'
 classes = (
-    '要補修-1.区画線',
-    '要補修-2.道路標識',
-    '要補修-3.照明',
-    '補修不要-1.区画線',
-    '補修不要-2.道路標識',
-    '補修不要-3.照明'
+    '区画線',
+    '道路標識',
+    '照明',
 )
 
 file_client_args = dict(backend='disk')
