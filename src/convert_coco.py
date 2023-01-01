@@ -62,7 +62,7 @@ def main():
                         'id': instance_id,
                         'image_id': image_id,
                         'bbox': [x, y, w, h],
-                        'category_id': category2id[cat],
+                        'category_id': category2id(cat),
                         'area': w * h,
                         'iscrowd': 0,
                     }
