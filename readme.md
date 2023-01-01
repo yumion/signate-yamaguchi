@@ -1,3 +1,16 @@
+# githubのclone
+submoduleを含めてcloneする
+```bash
+git clone --recursive https://github.com/yumion/signate-yamaguchi.git
+```
+
+後からsubmoduleをcloneする場合
+```bash
+git submodule update --init --recursive
+```
+---
+
+
 # 配布データと応募用ファイル作成方法の説明
 
 本コンペティションで配布されるデータと応募用ファイルの作成方法について説明する.
