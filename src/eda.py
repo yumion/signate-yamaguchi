@@ -6,15 +6,8 @@ import numpy as np
 from convert_coco import load_annotation, save_annotation
 
 # original classes
-CATEGORIES = [
-    {'id': 0, 'name': '要補修-1.区画線'},
-    {'id': 1, 'name': '要補修-2.道路標識'},
-    {'id': 2, 'name': '要補修-3.照明'},
-    {'id': 3, 'name': '補修不要-1.区画線'},
-    {'id': 4, 'name': '補修不要-2.道路標識'},
-    {'id': 5, 'name': '補修不要-3.照明'},
-]
-CATEGORY2ID = {category['name']: category['id'] for category in CATEGORIES}
+CATEGORIES = ['要補修-1.区画線', '要補修-2.道路標識', '要補修-3.照明',
+              '補修不要-1.区画線', '補修不要-2.道路標識', '補修不要-3.照明']
 
 
 def obj_counter():
@@ -27,7 +20,7 @@ def obj_counter():
         for anno in annos:
             cats = list(anno['labels'].keys())
             scene_cats.extend(cats)
-        c = {"scene": json_p.stem} | {cat: 0 for cat in CATEGORY2ID.keys()}
+        c = {"scene": json_p.stem} | {cat: 0 for cat in CATEGORIES}
         c.update(collections.Counter(scene_cats))
         counter_summary.append(c)
 
@@ -40,7 +33,7 @@ def frame_anno_counter():
     json_dir = Path('../input/train')
     for json_p in tqdm(sorted(json_dir.glob('scene_*.json'))):
         annos = load_annotation(json_p)
-        c = {"scene": json_p.stem} | {cat: 0 for cat in CATEGORY2ID.keys()}
+        c = {"scene": json_p.stem} | {cat: 0 for cat in CATEGORIES}
         for frame_anno in annos:
 
             if "要補修-1.区画線" in list(frame_anno['labels'].keys()):
@@ -97,7 +90,7 @@ def crob_bbox():
         scene = json_p.stem
         scene_img_dir = img_dir / scene / "images"
 
-        for cat in CATEGORY2ID.keys():
+        for cat in CATEGORIES:
             cat_dir = img_dir / scene / "categories" / cat
             cat_dir.mkdir(parents=True, exist_ok=True)
 
