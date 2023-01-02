@@ -134,3 +134,6 @@ dmypy.json
 
 # model
 *.pth
+
+# submittion code
+*.zip
