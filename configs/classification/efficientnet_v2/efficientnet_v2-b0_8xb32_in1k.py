@@ -6,3 +6,5 @@ _base_ = [
 ]
 
 model = dict(head=dict(num_classes=2))
+
+load_from = "https://download.openmmlab.com/mmclassification/v0/efficientnetv2/efficientnetv2-b0_3rdparty_in1k_20221221-9ef6e736.pth"
