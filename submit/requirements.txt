@@ -16,4 +16,4 @@ scipy
 six
 terminaltables
 albumentations>=0.3.2 --no-binary qudida,albumentations
-git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
+mmdet==3.0.0rc5
