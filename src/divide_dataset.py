@@ -7,16 +7,21 @@ from sklearn.model_selection import GroupKFold
 from convert_coco import load_annotation, save_annotation
 
 
-def main():
+# original classes
+CATEGORIES = ['要補修-1.区画線', '要補修-2.道路標識', '要補修-3.照明',
+              '補修不要-1.区画線', '補修不要-2.道路標識', '補修不要-3.照明']
+
+
+def main(dst_dir: Path, anno_file: str):
     src_dir = Path('../input/train_image')
-    dst_dir = Path('../input/train_5cv_3classes')
-    annotation_filename = 'annotations_3classes.json'
     n_splits = 5
 
     data = get_dataframe(src_dir)
     train, test = data_split(data, n_splits=n_splits)
-    save_cv(test, src_dir, dst_dir, annotation_filename, train_test='test', symlink=True)  # foldフォルダ直下に画像を全て保存
-    save_cv(train, src_dir, dst_dir, annotation_filename, train_test='train', symlink=True)  # foldフォルダ直下に画像を全て保存
+    save_cv_cls(test, src_dir, dst_dir, train_test='test')
+    save_cv_cls(train, src_dir, dst_dir, train_test='train')
+    # save_cv(test, src_dir, dst_dir, anno_file, train_test='test', symlink=True)  # foldフォルダ直下に画像を全て保存
+    # save_cv(train, src_dir, dst_dir, anno_file, train_test='train', symlink=True)  # foldフォルダ直下に画像を全て保存
     # save_group(test, src_dir, dst_dir, symlink=True)  # 動画単位でフォルダ分けして保存
 
 
@@ -49,11 +54,38 @@ def data_split(data, n_splits):
     return train, test
 
 
-def save_cv(folds: dict, src_dir: Path, dst_dir: Path, annotation_filename: str, train_test: str = 'test', symlink: bool = False):
+def save_cv(folds: dict, src_dir: Path, dst_dir: Path, anno_file: str, train_test: str = 'test', symlink: bool = False):
     for i, fold in folds.items():
         save_image(fold, src_dir, dst_dir / f'cv{i + 1}/{train_test}', symlink)
-        dst_json = concat_annotation(src_dir, list(set(fold['group'])), annotation_filename)
-        save_annotation(dst_json, dst_dir / f'cv{i + 1}/{train_test}' / annotation_filename)
+        dst_json = concat_annotation(src_dir, list(set(fold['group'])), anno_file)
+        save_annotation(dst_json, dst_dir / f'cv{i + 1}/{train_test}' / anno_file)
+
+
+def save_cv_cls(folds: dict, src_dir: Path, dst_dir: Path, train_test: str):
+    # src: train_image/scene_00/categories/補修不要-1.区画線/scene_00_000000_1.png
+    # dst: train_5cv/cv1/test/categories/line/補修不要-1.区画線/scene_00_000000_1.png
+    line = ['要補修-1.区画線', '補修不要-1.区画線']
+    sign = ['要補修-2.道路標識', '補修不要-2.道路標識']
+    light = ['要補修-3.照明', '補修不要-3.照明']
+
+    for i, fold in folds.items():
+        scenes = np.unique(fold['group'])
+        for cat in CATEGORIES:
+
+            if cat in line:
+                group = 'line'
+            elif cat in sign:
+                group = 'sign'
+            elif cat in light:
+                group = 'light'
+
+            dst_cat_dir = dst_dir / f'cv{i + 1}' / train_test / "categories" / group /cat
+            dst_cat_dir.mkdir(parents=True, exist_ok=True)
+            for scene in scenes:
+                src_cat_dir = src_dir / scene / "categories" / cat
+                for src_image_p in src_cat_dir.glob("*.png"):
+                    dst_image_p = dst_cat_dir / src_image_p.name
+                    dst_image_p.resolve().symlink_to(src_image_p.resolve())
 
 
 def save_image(fold: dict, src_dir: Path, dst_dir: Path, symlink: bool = False):
@@ -102,4 +134,5 @@ def symlink_dir(src_dir, dst_dir):
 
 
 if __name__ == '__main__':
-    main()
+    main(Path('../input/train_5cv'), 'annotations.json')
+    # main(Path('../input/train_5cv_3classes'), 'annotations_3classes.json')

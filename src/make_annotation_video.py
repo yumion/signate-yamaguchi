@@ -6,8 +6,8 @@ FONT_FAMILY = "HackGen"
 # [print(f.name) for f in font_manager.fontManager.ttflist];
 
 # SET YOUR DIR PATH
-INPUT_DIR = "input/train/"  # contains input mp4, json files
-OUTPUT_DIR = "input/annotated/"  # annotated movies will be saved here
+INPUT_DIR = "../input/train/"  # contains input mp4, json files
+OUTPUT_DIR = "../input/annotated/"  # annotated movies will be saved here
 
 
 import json
@@ -218,3 +218,7 @@ def create_annotated_video(video_path, annot_path, output_dir):
         video.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
     logger.info("wrote {}", output_path)
     video.release()
+
+
+if __name__ == "__main__":
+    main()
