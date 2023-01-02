@@ -6,8 +6,8 @@ import imageio
 
 
 def main():
-    result_dir = Path('../work_dirs/retinanet_r50_fpn_1x_coco_3classes/20230101_083452/work_dirs/retinanet_r50_fpn_1x_coco_3classes')
-    save_dir = result_dir / 'video'
+    result_dir = Path('../work_dirs/retinanet_r50_fpn_1x_coco/20230102_031851/prediction')
+    save_dir = result_dir.parent / 'prediction_video'
 
     save_dir.mkdir(parents=True, exist_ok=True)
     pre_scene = None
