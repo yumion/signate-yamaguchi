@@ -16,7 +16,6 @@ class ScoringService(object):
 
         return True
 
-
     @classmethod
     def predict(cls, input):
         """Predict method
@@ -34,7 +33,7 @@ class ScoringService(object):
         while True:
             ret, frame = cap.read()
             if ret:
-                prediction.append({'frame_id':frame_id, 'line': 1, 'sign': 0, 'light': 0})
+                prediction.append({'frame_id': frame_id, 'line': 1, 'sign': 0, 'light': 0})
                 frame_id += 1
             else:
                 break

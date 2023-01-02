@@ -78,7 +78,7 @@ def dataset_mean_std():
     # std:   [54.86452982 51.95639627 46.8286899 ]
 
 
-def crob_bbox():
+def crop_bbox():
     # sceneごとカテゴリごとにbboxを切り出して保存する
     # train_image/scene_00/categories/補修不要-1.区画線/scene_00_000000_1.png
 
@@ -110,4 +110,4 @@ def crob_bbox():
 
 
 if __name__ == "__main__":
-    crob_bbox()
+    crop_bbox()
