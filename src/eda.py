@@ -3,7 +3,18 @@ import collections
 from pathlib import Path
 import cv2
 import numpy as np
-from convert_coco import load_annotation, save_annotation, CATEGORY2ID
+from convert_coco import load_annotation, save_annotation
+
+# original classes
+CATEGORIES = [
+    {'id': 0, 'name': '要補修-1.区画線'},
+    {'id': 1, 'name': '要補修-2.道路標識'},
+    {'id': 2, 'name': '要補修-3.照明'},
+    {'id': 3, 'name': '補修不要-1.区画線'},
+    {'id': 4, 'name': '補修不要-2.道路標識'},
+    {'id': 5, 'name': '補修不要-3.照明'},
+]
+CATEGORY2ID = {category['name']: category['id'] for category in CATEGORIES}
 
 
 def obj_counter():
