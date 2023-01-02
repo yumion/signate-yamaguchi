@@ -62,6 +62,8 @@ val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + f'test/{annotation_filename}',
     metric='bbox',
+    classwise=True,
+    iou_thrs=0.5,
     format_only=False)
 test_evaluator = val_evaluator
 
