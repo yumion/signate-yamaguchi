@@ -1,5 +1,6 @@
 _base_ = [
     # 'yolo_pipeline.py',
+    '../mmdet_runtime.py',
     '../../../src/mmdetection/configs/mmyolo/yolov7/yolov7_e-p6_syncbn_fast_8x16b-300e_coco.py',
 ]
 
@@ -69,3 +70,13 @@ model = dict(
         nms=dict(type='nms', iou_threshold=0.5),
         max_per_img=100)
 )
+
+# runtime
+default_scope = 'mmyolo'
+
+default_hooks = dict(
+    visualization=dict(type='mmdet.DetVisualizationHook'))
+
+vis_backends = [dict(type='LocalVisBackend')]
+visualizer = dict(
+    type='mmdet.DetLocalVisualizer')
