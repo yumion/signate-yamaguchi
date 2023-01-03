@@ -5,6 +5,9 @@ import cv2
 import numpy as np
 from convert_coco import load_annotation, save_annotation
 
+
+HEIGHT = 1080
+WIDTH = 1920
 # original classes
 CATEGORIES = ['要補修-1.区画線', '要補修-2.道路標識', '要補修-3.照明',
               '補修不要-1.区画線', '補修不要-2.道路標識', '補修不要-3.照明']
@@ -66,7 +69,7 @@ def dataset_mean_std():
         total_sum += np.sum(img, axis=(0, 1))
         total_sum_square += np.sum(img ** 2, axis=(0, 1))
 
-    count = len(list(img_dir.glob("*/images/*.png"))) * 1920 * 1080
+    count = len(list(img_dir.glob("*/images/*.png"))) * WIDTH * HEIGHT
     total_mean = total_sum / count
     total_var = (total_sum_square / count) - (total_mean ** 2)
     total_std = np.sqrt(total_var)
@@ -74,8 +77,8 @@ def dataset_mean_std():
     print('mean: ', str(total_mean))
     print('std:  ', str(total_std))
 
-    # mean:  [87.72285137 95.26489529 88.03187912]
-    # std:   [54.86452982 51.95639627 46.8286899 ]
+    # mean:  [87.72285137 95.26489529 88.03187912]  # B,G,R
+    # std:   [54.86452982 51.95639627 46.8286899 ]  # B,G,R
 
 
 def crop_bbox():

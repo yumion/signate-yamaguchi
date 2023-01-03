@@ -22,7 +22,7 @@ classes = (
 
 
 train_dataloader = dict(
-    batch_size=4,
+    batch_size=6,
     num_workers=16,
     dataset=dict(
         metainfo=dict(classes=classes),

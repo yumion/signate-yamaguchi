@@ -1,5 +1,5 @@
 _base_ = [
-    '../cv1.py',
+    '../cv1_light.py',
     '../schedule_20e.py',
     '../../../src/mmclassification/configs/_base_/models/efficientnet_v2/efficientnet_v2_b0.py',
     '../../../src/mmclassification/configs/_base_/default_runtime.py'

@@ -18,11 +18,16 @@ def main(dst_dir: Path, anno_file: str):
 
     data = get_dataframe(src_dir)
     train, test = data_split(data, n_splits=n_splits)
+    # foldフォルダ直下に画像を全て保存
+    # classification
     save_cv_cls(test, src_dir, dst_dir, train_test='test')
     save_cv_cls(train, src_dir, dst_dir, train_test='train')
-    # save_cv(test, src_dir, dst_dir, anno_file, train_test='test', symlink=True)  # foldフォルダ直下に画像を全て保存
-    # save_cv(train, src_dir, dst_dir, anno_file, train_test='train', symlink=True)  # foldフォルダ直下に画像を全て保存
-    # save_group(test, src_dir, dst_dir, symlink=True)  # 動画単位でフォルダ分けして保存
+    # detection
+    # save_cv(test, src_dir, dst_dir, anno_file, train_test='test', symlink=True)
+    # save_cv(train, src_dir, dst_dir, anno_file, train_test='train', symlink=True)
+
+    # # 動画単位でフォルダ分けして保存
+    # save_group(test, src_dir, dst_dir, symlink=True)
 
 
 def get_dataframe(src_dir):
@@ -79,9 +84,9 @@ def save_cv_cls(folds: dict, src_dir: Path, dst_dir: Path, train_test: str):
             elif cat in light:
                 group = 'light'
 
-            dst_cat_dir = dst_dir / f'cv{i + 1}' / train_test / "categories" / group /cat
+            dst_cat_dir = dst_dir / f'cv{i + 1}' / train_test / "categories" / group / cat
             dst_cat_dir.mkdir(parents=True, exist_ok=True)
-            for scene in scenes:
+            for scene in tqdm(scenes, desc=f'fold{i} - class: {cat}'):
                 src_cat_dir = src_dir / scene / "categories" / cat
                 for src_image_p in src_cat_dir.glob("*.png"):
                     dst_image_p = dst_cat_dir / src_image_p.name
