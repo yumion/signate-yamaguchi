@@ -1,7 +1,7 @@
 # dataset settings
 dataset_type = 'CocoDataset'
 data_root = 'input/train_5cv/cv1/'
-annotation_filename = 'annotations_3classes.json'
+annotation_filename = 'annotations.json'
 classes = (
     '要補修-1.区画線',
     '要補修-2.道路標識',
