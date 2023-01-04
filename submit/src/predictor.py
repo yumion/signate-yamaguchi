@@ -5,13 +5,12 @@ import numpy as np
 # from mmdet.utils import register_all_modules
 from mmyolo.utils import register_all_modules
 from mmdet.apis import init_detector, inference_detector
-from abc_predictor import ScoringService
 
 
 register_all_modules()
 
 
-class ScoringService(ScoringService):
+class ScoringService:
     pred_score_thr = 0.3
     classes = (
         '要補修-1.区画線',
