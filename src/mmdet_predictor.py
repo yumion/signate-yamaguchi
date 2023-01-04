@@ -2,13 +2,20 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-# from mmdet.utils import register_all_modules
-from mmyolo.utils import register_all_modules
+from mmdet.utils import register_all_modules
+# from mmyolo.utils import register_all_modules
 from mmdet.apis import init_detector, inference_detector
 from abc_predictor import ScoringService
 
 
 register_all_modules()
+
+
+from mmengine.registry import count_registered_modules
+print(count_registered_modules())
+import json
+with open('registry.json', 'w') as fw:
+    json.dump(count_registered_modules(), fw, indent=4)
 
 
 class ScoringService(ScoringService):

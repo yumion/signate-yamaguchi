@@ -4,14 +4,20 @@ import numpy as np
 
 from mmdet.utils import register_all_modules as register_all_det_modules
 from mmdet.apis import init_detector, inference_detector
-from mmyolo.utils import register_all_modules as register_all_yolo_modules
+# from mmyolo.utils import register_all_modules as register_all_yolo_modules
 from mmcls.utils import register_all_modules as register_all_cls_modules
 from mmcls.apis import init_model, inference_model
 from abc_predictor import ScoringService
 
-# register_all_det_modules()
-register_all_yolo_modules()
-register_all_cls_modules()
+register_all_det_modules()
+# register_all_yolo_modules()
+register_all_cls_modules(False)
+
+# from mmengine.registry import count_registered_modules
+# print(count_registered_modules())
+# import json
+# with open('registry.json', 'w') as fw:
+#     json.dump(count_registered_modules(), fw, indent=4)
 
 
 class ScoringService(ScoringService):
@@ -72,14 +78,15 @@ class ScoringService(ScoringService):
                 break
         return prediction
 
-    def inference(self, frame):
-        det_labels, bboxes = self.detect(frame)
-        cls_labels = self.classify(frame, det_labels, bboxes)
-        labels = self.ensemble(det_labels, cls_labels, self.ensemble_method)
+    @classmethod
+    def inference(cls, frame):
+        bboxes, det_labels = cls.detect(frame)
+        cls_labels = cls.classify(frame, bboxes, det_labels)
+        labels = cls.ensemble(det_labels, cls_labels, cls.ensemble_method)
         # 画像中に白線、標識、街頭がそれぞれ要補修が1つでもあればフラグを立てて返す
         result = {'line': 0, 'sign': 0, 'light': 0}
         for label in labels:
-            label_name = self.classes[label]
+            label_name = cls.classes[label]
             if label_name == '要補修-1.区画線':
                 result['line'] = 1
             if label_name == '要補修-2.道路標識':
@@ -88,7 +95,8 @@ class ScoringService(ScoringService):
                 result['light'] = 1
         return result
 
-    def detect(self, frame: np.ndarray):
+    @classmethod
+    def detect(cls, frame: np.ndarray):
         """mmdet inferece method
         Args:
             frame (np.ndarray): BGR image.
@@ -96,38 +104,40 @@ class ScoringService(ScoringService):
             result (dict): {'line': flag, 'sign': flag, 'light': flag}
         """
         # 推論
-        data_sample = inference_detector(self.det_model, frame)
+        data_sample = inference_detector(cls.det_model, frame)
         # 予測instanceを取得
         pred_instances = data_sample.pred_instances
-        pred_instances = pred_instances[pred_instances.scores > self.pred_score_thr]
+        pred_instances = pred_instances[pred_instances.scores > cls.pred_score_thr]
         # instanceからbboxとlabel idを取得
         bboxes = pred_instances.bboxes
         labels = pred_instances.labels
-        return bboxes, labels
+        return bboxes.cpu().detach().numpy(), labels.cpu().detach().numpy()
 
-    def classify(self, frame, labels, bboxes):
+    @classmethod
+    def classify(cls, frame, bboxes, labels):
         result = []
         # inference per a bbox
-        for label, bbox in zip(labels, bboxes):
+        for bbox, label in zip(bboxes, labels):
             # switch classification model
-            label_name = self.classes[label]
+            label_name = cls.classes[label]
             if '区画線' in label_name:
-                classifier = self.cls_models['line']
+                classifier = cls.cls_models['line']
             elif '道路標識' in label_name:
-                classifier = self.cls_models['sign']
+                classifier = cls.cls_models['sign']
             elif '照明' in label_name:
-                classifier = self.cls_models['light']
+                classifier = cls.cls_models['light']
             # crop frame as a bbox
-            x1, y1, x2, y2 = self._xywh2xyxy(bbox)
+            x1, y1, x2, y2 = cls._xywh2xyxy(bbox)
             crop = frame[y1:y2, x1:x2]
             # inference against bbox
             res = inference_model(classifier, crop)
             # convert class id from binary classfication to 6 classes detection
-            pred_label = self.classes.index(res['pred_class'])
+            pred_label = cls.classes.index(res['pred_class'])
             result.append(pred_label)
         return result
 
-    def ensemble(self, det_labels, cls_labels, mode='AND'):
+    @classmethod
+    def ensemble(cls, det_labels, cls_labels, mode='AND'):
         """ensemble of detection class and classification results
 
         Args:
@@ -137,12 +147,11 @@ class ScoringService(ScoringService):
                                                    if AND, (0,1) -> 0, if OR, (0,1) -> 1.
                                                    Defaults to 'AND'.
         """
-        # decrement for starting index 0
         det_labels = np.array(det_labels)
-        cls_labels = np.array(cls_labels) - 1
+        cls_labels = np.array(cls_labels)
         # onehot encoding
-        det_onehot = np.eye(len(self.classes))[det_labels]
-        cls_onehot = np.eye(len(self.classes))[cls_labels]
+        det_onehot = np.eye(len(cls.classes))[det_labels]
+        cls_onehot = np.eye(len(cls.classes))[cls_labels]
         # ensemble
         if mode == 'AND':
             labels_onehot = det_onehot * cls_onehot
@@ -152,15 +161,14 @@ class ScoringService(ScoringService):
             NotImplementedError
         # convert class id
         labels = np.argmax(labels_onehot, axis=-1)
-        # increment for starting index 1
-        labels += 1
         return labels
 
-    def _xywh2xyxy(self, bbox: np.ndarray) -> list:
+    @classmethod
+    def _xywh2xyxy(cls, bbox: np.ndarray) -> list:
         _bbox = bbox.tolist()
         return [
-            _bbox[0],
-            _bbox[1],
-            _bbox[0] + _bbox[2],
-            _bbox[1] + _bbox[3],
+            int(_bbox[0]),
+            int(_bbox[1]),
+            int(_bbox[0] + _bbox[2]),
+            int(_bbox[1] + _bbox[3]),
         ]
