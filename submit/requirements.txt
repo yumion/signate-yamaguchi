@@ -6,7 +6,7 @@ torchvision==0.11.0+cu113
 -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10.0/index.html
 mmcv==2.0.0rc3
 # mmengine
-mmengine==0.3.0
+mmengine==0.4.0
 # mmdetection
 cython
 numpy
