@@ -4,13 +4,13 @@ warmup_epochs = 5
 
 train_cfg = dict(by_epoch=True, max_epochs=max_epochs, val_interval=1)
 val_cfg = dict()
-# test_cfg = dict()
+test_cfg = dict()
 
 # optimizer
 optim_wrapper = dict(
     optimizer=dict(
         type='RAdam',
-        lr=0.1,
+        lr=0.01,
         betas=(0.9, 0.999),
         eps=1e-08,
         weight_decay=1e-4))

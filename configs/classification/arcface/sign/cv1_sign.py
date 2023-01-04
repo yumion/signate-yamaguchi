@@ -1,7 +1,7 @@
 # dataset settings
 dataset_type = 'CustomDataset'
 data_root = 'input/train_5cv/cv1/'
-category = 'light'
+category = 'sign'
 
 data_preprocessor = dict(
     num_classes=2,
@@ -12,34 +12,10 @@ data_preprocessor = dict(
     to_rgb=True,
 )
 
-bgr_mean = data_preprocessor['mean'][::-1]
-bgr_std = data_preprocessor['std'][::-1]
-
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(
-        type='RandomResizedCrop',
-        scale=192,
-        backend='pillow',
-        interpolation='bicubic'),
+    dict(type='EfficientNetRandomCrop', scale=192, crop_padding=0),
     dict(type='RandomFlip', prob=0.5, direction='horizontal'),
-    dict(
-        type='RandAugment',
-        policies='timm_increasing',
-        num_policies=2,
-        total_level=10,
-        magnitude_level=9,
-        magnitude_std=0.5,
-        hparams=dict(
-            pad_val=[round(x) for x in bgr_mean], interpolation='bicubic')),
-    dict(
-        type='RandomErasing',
-        erase_prob=0.25,
-        mode='rand',
-        min_area_ratio=0.02,
-        max_area_ratio=1 / 3,
-        fill_color=bgr_mean,
-        fill_std=bgr_std),
     dict(type='PackClsInputs'),
 ]
 
@@ -51,7 +27,7 @@ test_pipeline = [
 
 train_dataloader = dict(
     batch_size=128,
-    num_workers=5,
+    num_workers=16,
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
@@ -63,7 +39,7 @@ train_dataloader = dict(
 
 val_dataloader = dict(
     batch_size=128,
-    num_workers=5,
+    num_workers=16,
     dataset=dict(
         type=dataset_type,
         data_root=data_root,

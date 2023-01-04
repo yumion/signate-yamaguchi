@@ -55,7 +55,7 @@ def main():
 
     # load the model
     sys.path.append(cwd)
-    from predictor import ScoringService
+    from mmcls_predictor import ScoringService
 
     print('\nLoading the model...', end = '\r')
     model_flag = ScoringService.get_model(model_path)

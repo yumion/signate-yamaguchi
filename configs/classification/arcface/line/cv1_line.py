@@ -1,6 +1,7 @@
 # dataset settings
 dataset_type = 'CustomDataset'
 data_root = 'input/train_5cv/cv1/'
+category = 'line'
 
 data_preprocessor = dict(
     num_classes=2,
@@ -30,7 +31,7 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        data_prefix='train/categories/light',
+        data_prefix=f'train/categories/{category}',
         pipeline=train_pipeline,
     ),
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -42,7 +43,7 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        data_prefix='test/categories/light',
+        data_prefix=f'test/categories/{category}',
         pipeline=test_pipeline,
     ),
     sampler=dict(type='DefaultSampler', shuffle=False),
@@ -50,4 +51,5 @@ val_dataloader = dict(
 
 val_evaluator = dict(type='SingleLabelMetric')
 
-# test_dataloader = dict(dataset=dict(pipeline=test_pipeline))
+test_dataloader = val_dataloader
+test_evaluator = val_evaluator

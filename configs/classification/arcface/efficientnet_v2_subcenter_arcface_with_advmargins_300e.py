@@ -1,19 +1,10 @@
 _base_ = [
-    'cv1_light.py',
     '../schedule_coslr_coswd_300e.py',
     '../../../src/mmclassification/configs/_base_/models/efficientnet_v2/efficientnetv2_m.py',
-    '../mmcls_runtime.py'
+    '../mmcls_runtime.py',
 ]
 
 load_from = "https://download.openmmlab.com/mmclassification/v0/efficientnetv2/efficientnetv2-m_in21k-pre-3rdparty_in1k_20221220-a1013a04.pth"
-
-train_dataloader = dict(
-    batch_size=64,
-    num_workers=16)
-
-val_dataloader = dict(
-    batch_size=64,
-    num_workers=16)
 
 model = dict(
     head=dict(

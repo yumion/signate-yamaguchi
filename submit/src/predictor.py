@@ -2,14 +2,16 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from mmdet.utils import register_all_modules
+# from mmdet.utils import register_all_modules
+from mmyolo.utils import register_all_modules
 from mmdet.apis import init_detector, inference_detector
+from abc_predictor import ScoringService
 
 
 register_all_modules()
 
 
-class ScoringService:
+class ScoringService(ScoringService):
     pred_score_thr = 0.3
     classes = (
         '要補修-1.区画線',
@@ -24,8 +26,8 @@ class ScoringService:
     def get_model(cls, model_path):
         model_path = Path(model_path)
         # Build the model from a config file and a checkpoint file
-        config_file = model_path / 'config.py'
-        checkpoint_file = model_path / 'checkpoint.pth'
+        config_file = model_path / 'detection/config.py'
+        checkpoint_file = model_path / 'detection/checkpoint.pth'
         cls.model = init_detector(
             str(config_file), str(checkpoint_file), device='cuda:0')
         return True

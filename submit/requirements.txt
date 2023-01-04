@@ -17,3 +17,5 @@ six
 terminaltables
 albumentations>=0.3.2 --no-binary qudida,albumentations
 mmdet==3.0.0rc5
+# mmyolo
+mmyolo
