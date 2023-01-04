@@ -7,20 +7,13 @@ from mmdet.apis import init_detector, inference_detector
 # from mmyolo.utils import register_all_modules as register_all_yolo_modules
 from mmcls.utils import register_all_modules as register_all_cls_modules
 from mmcls.apis import init_model, inference_model
-from abc_predictor import ScoringService
 
 register_all_det_modules()
 # register_all_yolo_modules()
 register_all_cls_modules(False)
 
-# from mmengine.registry import count_registered_modules
-# print(count_registered_modules())
-# import json
-# with open('registry.json', 'w') as fw:
-#     json.dump(count_registered_modules(), fw, indent=4)
 
-
-class ScoringService(ScoringService):
+class ScoringService:
     pred_score_thr = 0.3
     ensemble_method = 'AND'
     classes = [
