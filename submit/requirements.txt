@@ -8,14 +8,9 @@ mmcv==2.0.0rc3
 # mmengine
 mmengine==0.4.0
 # mmdetection
-cython
-numpy
-matplotlib
-pycocotools
-scipy
-six
-terminaltables
 albumentations>=0.3.2 --no-binary qudida,albumentations
 mmdet==3.0.0rc5
 # mmyolo
 mmyolo
+# mmclsification
+mmcls==1.0.0rc5

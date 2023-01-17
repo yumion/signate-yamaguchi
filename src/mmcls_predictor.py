@@ -73,11 +73,15 @@ class ScoringService:
 
     @classmethod
     def inference(cls, frame):
+        result = {'line': 0, 'sign': 0, 'light': 0}
         bboxes, det_labels = cls.detect(frame)
+        # 検出したinstanceがなければフラグ0で返す
+        if len(det_labels) == 0:
+            return result
+
         cls_labels = cls.classify(frame, bboxes, det_labels)
         labels = cls.ensemble(det_labels, cls_labels, cls.ensemble_method)
         # 画像中に白線、標識、街頭がそれぞれ要補修が1つでもあればフラグを立てて返す
-        result = {'line': 0, 'sign': 0, 'light': 0}
         for label in labels:
             label_name = cls.classes[label]
             if label_name == '要補修-1.区画線':

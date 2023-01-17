@@ -11,13 +11,6 @@ from abc_predictor import ScoringService
 register_all_modules()
 
 
-from mmengine.registry import count_registered_modules
-print(count_registered_modules())
-import json
-with open('registry.json', 'w') as fw:
-    json.dump(count_registered_modules(), fw, indent=4)
-
-
 class ScoringService(ScoringService):
     pred_score_thr = 0.3
     classes = (
