@@ -15,7 +15,7 @@ ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6+PTX" \
     LANG="C.UTF-8"
 
 # add japanese font
-COPY src/mmdetction/docker/takao-gothic /usr/share/fonts/truetype/
+COPY src/mmdetection/docker/takao-gothic /usr/share/fonts/truetype/
 
 # Avoid Public GPG key error
 # https://github.com/NVIDIA/nvidia-docker/issues/1631
